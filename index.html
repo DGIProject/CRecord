@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>CRecord</title>
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="container">
+    <h1>CRecord</h1>
+    <div id="recordSystem">
+        <div class="panel panel-default" style="width: 100%;height: 350px;">
+            <div class="panel-body">
+                <div id="loadSystem" style="text-align: center;">
+                    <div style="margin-top: 20px;">
+                        <div>
+                            <img src="img/ajax-loader.gif" alt="ajax-loader">
+                        </div>
+                        <span>Chargement en cours ...</span>
+                    </div>
+                    <div style="margin-top: 100px;">
+                        <span id="messageLoad" style="font-style: italic;">...</span>
+                    </div>
+                </div>
+                <div id="errorSystem" style="text-align: center;display: none;">
+                    <div style="margin-top: 20px;">
+                        <h2>ERREUR</h2>
+                        <span>Une erreur s'est produite sur le système d'enregistement.</span>
+                        <span id="messageError"></span>
+                    </div>
+                    <div style="margin-top: 50px;">
+                        <button type="button" onclick="location.reload();" class="btn btn-default">Relancer</button>
+                    </div>
+                </div>
+                <div id="systemElements" style="display: none;">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <div id="recordPart">
+                                <div class="btn-toolbar">
+                                    <button type="button" id="buttonRecord" class="btn btn-danger btn-lg"><span class="glyphicon glyphicon-record"></span></button>
+                                    <button type="button" id="buttonPlay" class="btn btn-default"><span class="glyphicon glyphicon-play"></span></button>
+                                    <button type="button" id="buttonStop" class="btn btn-default"><span class="glyphicon glyphicon-stop"></span></button>
+                                    <a id="buttonDownloadRecord" href="#" class="btn btn-info" style="margin-left: 15px;"><span class="glyphicon glyphicon-download-alt"></span></a>
+                                    <span id="textRecordDuration" style="margin-left: 25px;font-weight: bold;font-size: 15px;">0 minute(s), 0 seconde(s)</span>
+                                </div>
+                                <hr>
+                                <span id="statusRecord" style="font-size: 12px;">Prêt pour un enregistrement.</span>
+                                <div class="row">
+                                    <div class="col-md-11">
+                                        <canvas id="waveDisplay" style="width: 100%;height: 150px;;border: 1px #e2e2e2 solid;border-radius: 2px;margin-top: 15px;"></canvas>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <progress min="0" max="100" value="25" style="-webkit-transform: rotate(270deg);
+                                        -moz-transform: rotate(270deg);
+                                        -o-transform: rotate(270deg);
+                                        transform: rotate(270deg);
+                                        margin-top: 60px;
+                                        margin-left: -50px;
+                                        width: 175px;
+                                        height: 35px;
+                                        border: 1px solid #c7c7c7;
+                                        border-radius: 2px;"></progress>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="filePart" style="display: none;">
+                                <button type="button" id="buttonExternalFile" class="btn btn-primary btn-lg btn-block">ENVOYER UN FICHIER</button>
+                                <input type="file" id="externalFile" name="externalFile" style="display: none;">
+                                <span>Vous pouvez ajouter plusieurs fichiers.</span>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <h4>Enregistrements</h4>
+                            <div id="listRecords" class="list-group" style="height: 250px;overflow: auto;">
+                                <span>(Aucun enregistrement)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="btn-group" data-toggle="buttons" style="margin-top: -25px;">
+                        <label id="buttonRecordPart" class="btn btn-primary btn-sm active">
+                            <input type="radio" name="options" autocomplete="off" checked> ENREGISTREMENT
+                        </label>
+                        <label id="buttonFilePart" class="btn btn-primary btn-sm">
+                            <input type="radio" name="options" autocomplete="off"> FICHIER
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <button type="button" id="buttonUploadRecord" class="btn btn-success">Envoyer</button>
+            </div>
+        </div>
+    </div>
+    <div id="uploadRecordModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Envoi de l'enregistrement ORAL</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Vous souhaitez envoyer votre enregistrement mais avant cela nous vous conseillons de l'enregistrer sur votre ordinateur pour éviter tout perte à cause d'une coupure de courant ou d'internet. Cette option est facultative.</p>
+                    <div class="well center">
+                        <h2 id="recordName">--</h2>
+                        <a id="buttonLastDownload" href="#" class="btn btn-primary">Télécharger</a>
+                    </div>
+                    <p>Après le téléchargement veuiller cliquer sur le bouton ci-dessous. Aucun retour ne sera possible après la fin de l'envoi du fichier.</p>
+                    <button type="button" id="buttonStartUpload" class="btn btn-success">Envoyer</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="progressUploadRecordModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Progression de l'envoi</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="progress">
+                        <div id="progressUploadRecord" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
+                            <span class="sr-only">--%</span>
+                        </div>
+                    </div>
+                    <span>
+                        <span id="percentUploadRecord">0%</span> - <span id="progressTimeLeft">--s</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/record.js"></script>
+<script src="js/cRecord.js"></script>
+<script src="js/manageCRecord.js"></script>
+</html>
